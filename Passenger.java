@@ -59,7 +59,7 @@ public class Passenger {
 	}
 	
 	public String toString() {
-		return name+" "+seatNumber+" "+seatClass;
+		return name+" "+seatNumber+" "+seatClass+" "+airlineName;
 	}
 	
 }
