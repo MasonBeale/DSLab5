@@ -1,0 +1,197 @@
+import java.io.*;
+import java.util.*;
+
+public class simulation {
+	private static final int FIRST = 10;
+	private static final int BUSINESS = 10;
+	private static final int ECONOMY = 20;
+	
+	private static ArrayList<Passenger> fileToArrayList(String f) throws FileNotFoundException{
+		ArrayList<Passenger> end= new ArrayList<Passenger>();
+
+		Scanner scan = new Scanner(new File(f));
+		while(scan.hasNextLine()) {			
+			String name = scan.next()+" "+scan.next();
+			//System.out.println(name);
+			int seat = scan.nextInt();
+			String sclass = scan.next();
+			end.add(new Passenger(seat,name,"delta",sclass));
+		}
+		return end;
+	}
+	
+	// adapted from ky's checkIn class
+	public static void checkIn(String PList, String passengerName) throws FileNotFoundException {
+		Boolean clear = false;
+		ArrayList<Passenger> airlinelist = fileToArrayList(PList+".txt");
+        for (Passenger passenger : airlinelist) {
+            if (passenger.getName().equals(passengerName)) {
+                passenger.setCheckIn(true);
+                System.out.println(passengerName+" has checked in for their flight.");
+                clear=true;
+                break;
+            }
+        }
+        if(!clear) {
+        	System.out.println(passengerName+" is not on the flight list.");
+        }
+    }
+	
+	//made by mason not finished
+	public static void addPassenger(String PList, String passengerName, String sclass) throws FileNotFoundException {
+		ArrayList<Integer> classAvailability = new ArrayList<Integer>(10);
+		
+		//add a part to check if section is full
+
+		ArrayList<Passenger> airlinelist = fileToArrayList(PList+".txt");
+
+		int nseat = 1;
+		for (Passenger passenger : airlinelist) {
+            if (passenger.getName().equals(passengerName)) {
+                passenger.setCheckIn(true);
+                System.out.println(passengerName+" is already on the flight list.");
+                break;
+            }
+            if(passenger.getSeatClass()==sclass) {
+            	classAvailability.add(passenger.getSeatNumber());
+            	
+            }
+            
+        }
+		airlinelist.add(new Passenger(nseat, passengerName, "Delta", sclass));
+		System.out.println(passengerName+" has been added to the flight list.");
+		
+		
+    }
+	
+	//ariannas 
+	public static ArrayList<Passenger> board(ArrayList<Passenger> DList, ArrayList<Passenger> UList) {
+		ArrayList<Passenger> boardingOrder = new ArrayList<Passenger>();
+		for(int i = 0; i < DList.size(); i++) {
+			if (DList.get(i).getSeatClass().equals("F")) {
+				if (DList.get(i).getCheck().equals(true)) {
+					boardingOrder.add(DList.get(i));
+				}
+			}
+		}
+		for (int i = 0; i < DList.size(); i++) {
+			if (DList.get(i).getSeatClass().equals("B")) {
+				if (DList.get(i).getCheck().equals(true)) {
+					boardingOrder.add(DList.get(i));
+				}
+			}
+		}
+		for (int i = 0; i < DList.size(); i++) {
+			if (DList.get(i).getSeatClass().equals("E")) {
+				if (DList.get(i).getCheck().equals(true)) {
+					boardingOrder.add(DList.get(i));
+				}
+			}
+		}
+		for(int i = 0; i < UList.size(); i++) {
+			if (UList.get(i).getSeatClass().equals("F")) {
+				if (UList.get(i).getCheck().equals(true)) {
+					boardingOrder.add(UList.get(i));
+				}
+			}
+		}
+		for (int i = 0; i < UList.size(); i++) {
+			if (UList.get(i).getSeatClass().equals("B")) {
+				if (UList.get(i).getCheck().equals(true)) {
+					boardingOrder.add(UList.get(i));
+				}
+			}
+		}
+		for (int i = 0; i < UList.size(); i++) {
+			if (UList.get(i).getSeatClass().equals("E")) {
+				if (UList.get(i).getCheck().equals(true)) {
+					boardingOrder.add(UList.get(i));
+				}
+			}
+		}
+		return boardingOrder;
+	}
+
+	//made from abbas sim code
+	private static void runManualSim(ArrayList<Passenger> DList, ArrayList<Passenger> UList) throws FileNotFoundException {
+		Scanner scan = new Scanner(System.in);
+
+		//menu
+		
+		Boolean end = false;
+		while(!end) {
+			System.out.println("");
+			System.out.println("Please choose an option:");
+			System.out.println("1. Check-in a passenger");
+			System.out.println("2. Add a new passenger");
+			System.out.println("3. Board passengers");
+			System.out.println("4. Quit");
+			int choice = scan.nextInt();
+			if(choice==4) {
+				System.out.println("Ended manual simulation.");
+				end=true;
+			}else if(choice==3) {
+				board(DList, UList);
+			}else if(choice==2) {
+				System.out.println("What is the passenger name?");
+				String name = scan.next()+" "+scan.next();
+				System.out.println("What airline will they be on?");
+				String air = scan.next();
+				System.out.println("What class will they be in?");
+				String pclass = scan.next();
+				System.out.println(pclass);
+				addPassenger(air, name, pclass);
+				
+			}else if(choice==1) {
+				System.out.println("What is the passenger name?");
+				String name = scan.next()+" "+scan.next();
+				System.out.println("What airline will they be on?");
+				String air = scan.next();
+				checkIn(air , name);
+
+			}
+		}
+		
+	}
+	
+	private static void runAutoSim(ArrayList<Passenger> DList, ArrayList<Passenger> UList) throws FileNotFoundException {
+		Random rand = new Random();
+		if(rand.nextInt(9)==0) {
+			System.out.println("IT HAPPENED");
+			for(int i=0;i<rand.nextInt(9)+1;i++) {
+				addPassenger("Delta","MASON BEALE","e");
+			}
+		}
+		if(rand.nextInt(9)==0) {
+			System.out.println("IT HAPPENED");
+			for(int i=0;i<rand.nextInt(9)+1;i++) {
+				addPassenger("United","MASON BEALE","e");
+			}
+		}
+		for(Passenger person:DList) {
+			int checkrand = rand.nextInt(100);
+			//System.out.println(checkrand);
+			if(checkrand>5) {
+				checkIn("Delta", person.getName());
+			}
+		}
+		for(Passenger person:UList) {
+			int checkrand = rand.nextInt(100);
+			//System.out.println(checkrand);
+			if(checkrand>5) {
+				checkIn("United", person.getName());
+			}
+		}
+		System.out.println(board(DList, UList));
+		
+	}
+	
+	public static void main(String[] args) throws FileNotFoundException {
+		ArrayList<Passenger> DeltaList = fileToArrayList("Delta.txt");
+		ArrayList<Passenger> UnitedList = fileToArrayList("United.txt");
+
+		
+		runManualSim(DeltaList, UnitedList);
+		//runAutoSim(DeltaList,UnitedList);
+	}
+}
